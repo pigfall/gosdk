@@ -4,6 +4,10 @@ import(
     "unicode/utf8"
 )
 
+func NullString()string{
+	return "\x00"
+}
+
 func IsASCII(b byte)bool{
     return b < utf8.RuneSelf
 }
