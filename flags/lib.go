@@ -10,6 +10,15 @@ func FlagParams(params ...Param){
 	}
 }
 
-func Parse(){
+func ParseAndValidate(params []Param)error{
 	stdflag.Parse()
+
+	for _,p := range params {
+		err := p.Validate()
+		if err != nil{
+			return err
+		}
+	}
+
+	return nil
 }
