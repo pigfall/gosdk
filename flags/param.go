@@ -16,7 +16,7 @@ func (this ParamDescBase) validate(v interface{})error{
 	for _,validator := range this.Validators{
 		err := validator(v)
 		if err != nil{
-			return err
+			return fmt.Errorf("value of flag %s is <%v>,invalid: %w",this.Name,v,err)
 		}
 	}
 
