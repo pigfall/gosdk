@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/buger/goterm v0.0.0-20200322175922-2f3e71b85129
+	github.com/fatih/color v1.13.0
 	github.com/go-kit/kit v0.11.0
 	github.com/go-redis/redis/v8 v8.10.0
 	github.com/google/gopacket v1.1.17
@@ -13,6 +14,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/pkg/sftp v1.12.0
 	github.com/songgao/water v0.0.0-20200317203138-2b4b6d7c09d8
+	github.com/spf13/cobra v0.0.3
 	github.com/streadway/amqp v1.0.0
 	github.com/tealeg/xlsx/v3 v3.2.3
 	github.com/vishvananda/netlink v1.1.0
@@ -27,7 +29,6 @@ require (
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v3 v3.0.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
-	github.com/fatih/color v1.13.0 // indirect
 	github.com/frankban/quicktest v1.5.0 // indirect
 	github.com/go-logfmt/logfmt v0.5.0 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
@@ -35,6 +36,7 @@ require (
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/btree v1.0.0 // indirect
 	github.com/google/go-cmp v0.5.6 // indirect
+	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/klauspost/compress v1.11.12 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
@@ -52,6 +54,7 @@ require (
 	github.com/richardlehane/msoleps v1.0.1 // indirect
 	github.com/rogpeppe/fastuuid v1.2.0 // indirect
 	github.com/shabbyrobe/xmlwriter v0.0.0-20200208144257-9fca06d00ffa // indirect
+	github.com/spf13/pflag v1.0.3 // indirect
 	github.com/vishvananda/netns v0.0.0-20191106174202-0a2b9b5464df // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v0.0.0-20180714160509-73f8eece6fdc // indirect

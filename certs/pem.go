@@ -21,6 +21,7 @@ const (
 	PEM_BLOCK_TYPE_RSA_PRIVATE_KEY = "RSA PRIVATE KEY"
 	PEM_BLOCK_TYPE_RSA_PUBLIC_KEY  = "PUBLIC KEY"
 	PEM_BLOCK_TYPE_CRT             = "CERTIFICATE"
+	PEM_BLOCK_TYPE_CSR             = "CERTIFICATE REQUEST"
 )
 
 func PemX509Save(filepath string, crtRaw []byte) error {
@@ -106,4 +107,19 @@ func PemLoadRSAPublicKey(filepath string) (pubKey *rsa.PublicKey, err error) {
 	pemPrivBytes := pemBlock.Bytes
 	pubKey, err = x509.ParsePKCS1PublicKey(pemPrivBytes)
 	return
+}
+
+func PemSaveCSRToFile(csr *x509.CertificateRequest,filepath string)error{
+	return fs.CreateThen(
+		filepath,
+		func(file *os.File)error{
+			return pem.Encode(
+				file,
+				&pem.Block{
+					Type: PEM_BLOCK_TYPE_CSR,
+					Bytes: csr.Raw,
+				},
+			)
+		},
+	)
 }
