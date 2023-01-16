@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 	"crypto/x509/pkix"
+	"crypto/x509"
 
 	"github.com/spf13/cobra"
 
@@ -22,6 +23,11 @@ type CaCreateCommand struct{
 
 	validNotBefore time.Time
 	validDuration time.Duration
+}
+
+type CaValidateCertCommand struct{
+	CaPath string
+	CertPath string
 }
 
 func CaCommand() *cobra.Command{
@@ -45,9 +51,24 @@ func CaCommand() *cobra.Command{
 	caCreateCobraCmd.Flags().StringVar(&caCreateCmd.OutputCertPath, "outputCertPath", "./ca.crt", "The path of the generated ca certificate")
 	caCreateCobraCmd.Flags().StringVar(&caCreateCmd.OutputPrivKeyPath, "outputPrivKeyPath", "./ca.key", "The path of the generated ca private key")
 
+	caValidateCertCmd := &CaValidateCertCommand{}
+	caValidateCertCommand := &cobra.Command{
+		Use: "validate",
+		RunE: caValidateCertCmd.Run,
+	}
+	caValidateCertCommand.Flags().StringVar(&caValidateCertCmd.CaPath,"caPath","","ca cert path")
+	caValidateCertCommand.Flags().StringVar(&caValidateCertCmd.CertPath,"certPath","","cert path")
+	if err :=caValidateCertCommand.MarkFlagRequired("caPath");err != nil{
+		panic(err)
+	}
+	if err :=caValidateCertCommand.MarkFlagRequired("certPath");err != nil{
+		panic(err)
+	}
+
 
 	cmd.AddCommand(
 			caCreateCobraCmd,
+			caValidateCertCommand,
 	)
 
 	return cmd
@@ -117,3 +138,27 @@ func (c *CaCreateCommand) init()error{
 
 	return nil
 }
+
+func (c *CaValidateCertCommand) Run(cmd *cobra.Command,args []string)error{
+	caCrt,err := certs.PemX509FromFile(c.CaPath)
+	if err != nil {
+		return fmt.Errorf("parse ca cert from file `%s` error: %w", c.CaPath,err)
+	}
+
+	cert,err := certs.PemX509FromFile(c.CertPath)
+	if err != nil{
+		return fmt.Errorf("parse cert from file `%s` error: %w",c.CertPath,err )
+	}
+
+	caPool := x509.NewCertPool()
+	caPool.AddCert(caCrt)
+	_,err = cert.Verify(x509.VerifyOptions{
+		Roots: caPool,
+	})
+	if err != nil{
+		return fmt.Errorf("the cert `%s` is not signed by ca `%s`",c.CaPath,c.CertPath)
+	}
+
+	return nil
+}
+
