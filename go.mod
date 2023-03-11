@@ -7,6 +7,7 @@ require (
 	github.com/fatih/color v1.13.0
 	github.com/go-kit/kit v0.11.0
 	github.com/go-redis/redis/v8 v8.10.0
+	github.com/golang-jwt/jwt/v5 v5.0.0-rc.1
 	github.com/google/gopacket v1.1.17
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/websocket v1.4.2
