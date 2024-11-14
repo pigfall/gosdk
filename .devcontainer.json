@@ -1,0 +1,31 @@
+//devcontainer.json
+{
+  "name": "gosdk",
+
+  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+  "image": "koitown/dev:go",
+
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  // "features": {},
+
+  "customizations": {
+    "vscode": {
+      "settings": {},
+      "extensions": []
+    }
+  },
+
+  // "forwardPorts": [3000],
+
+  //"portsAttributes": {
+  //  "3000": {
+  //    "label": "Hello Remote World",
+  //    "onAutoForward": "notify"
+  //  }
+  //},
+
+  "postCreateCommand": "go mod tidy"
+
+  // "remoteUser": "root"
+}
+
