@@ -3,7 +3,7 @@
   "name": "gosdk",
 
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-  "image": "koitown/dev:go1",
+  "image": "koitown/dev:go2",
 
   // Features to add to the dev container. More info: https://containers.dev/features.
   // "features": {},
