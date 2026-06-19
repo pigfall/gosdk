@@ -1,8 +1,9 @@
 module github.com/pigfall/gosdk
 
-go 1.17
+go 1.25.0
 
 require (
+	github.com/Zyko0/go-sdl3 v0.1.1
 	github.com/buger/goterm v0.0.0-20200322175922-2f3e71b85129
 	github.com/fatih/color v1.13.0
 	github.com/go-gl/gl v0.0.0-20260331235117-4566fea9a276
@@ -23,14 +24,16 @@ require (
 	github.com/xuri/excelize/v2 v2.4.1-0.20210727163809-e9ae9b45b20a
 	go.mongodb.org/mongo-driver v1.3.2
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
-	golang.org/x/sys v0.0.0-20210927094055-39ccf1dd6fa6
+	golang.org/x/sys v0.7.0
 	gopkg.in/yaml.v2 v2.3.0
 )
 
 require (
+	github.com/Zyko0/purego-gen v0.0.0-20250727121216-3bcd331a1e0c // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v3 v3.0.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/ebitengine/purego v0.10.0 // indirect
 	github.com/frankban/quicktest v1.5.0 // indirect
 	github.com/go-logfmt/logfmt v0.5.0 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
