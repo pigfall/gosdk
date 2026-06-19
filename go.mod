@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/buger/goterm v0.0.0-20200322175922-2f3e71b85129
 	github.com/fatih/color v1.13.0
+	github.com/go-gl/gl v0.0.0-20260331235117-4566fea9a276
 	github.com/go-kit/kit v0.11.0
 	github.com/go-redis/redis/v8 v8.10.0
 	github.com/golang-jwt/jwt/v5 v5.0.0-rc.1
