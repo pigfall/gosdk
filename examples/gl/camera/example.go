@@ -10,6 +10,7 @@ import (
 	examplegl "github.com/pigfall/gosdk/examples/gl"
 	"github.com/pigfall/gosdk/gl"
 	pimage "github.com/pigfall/gosdk/image"
+	pmath "github.com/pigfall/gosdk/math"
 	"github.com/pigfall/gosdk/sdl3"
 )
 
@@ -17,9 +18,10 @@ const vertexShaderSource = `#version 410 core
 layout (location=0) in vec3 in_pos;
 layout (location=1) in vec2 in_tex_coord;
 out vec2 v_tex_coord;
+uniform mat4 u_mvp;
 
 void main(){
-	gl_Position = vec4(in_pos,1.0);
+	gl_Position = u_mvp * vec4(in_pos,1.0);
 	v_tex_coord = in_tex_coord;
 }
 `
@@ -70,10 +72,10 @@ func main() {
 	gl.GLUseProgram(shaderProgram)
 
 	positions := []float32{
-		-0.5, 0.5, 0.0, 0.0, 1.0,
-		-0.5, -0.5, 0.0, 0.0, 0.0,
-		0.5, -0.5, 0.0, 1.0, 0.0,
-		0.5, 0.5, 0.0, 1.0, 1.0,
+		-50, 50, 0.0, 0.0, 1.0,
+		-50, -50, 0.0, 0.0, 0.0,
+		50, -50, 0.0, 1.0, 0.0,
+		50, 50, 0.0, 1.0, 1.0,
 	}
 
 	positionsBytes := make([]byte, len(positions)*4)
@@ -128,8 +130,30 @@ func main() {
 		rgbaImg.Pix,
 	)
 
+	cameraUp := pmath.Vec3{0,1,0}
+	cameraFront := pmath.Vec3{0,0,-1}
+	cameraPos := pmath.Vec3{0,0,600}
+	lookAt := pmath.Vector3Add(&cameraPos,&cameraFront)
+	lookAtMatrix := pmath.Matrix4LookAt(
+			cameraPos,
+			lookAt,
+			cameraUp,
+	)
+	projectionMatrix := pmath.Matrix4Perspective(
+			45 * math.Pi/180,
+			1.0,
+			0.025,
+			2048,
+	)
+	mvp := pmath.Matrix4Mul(&projectionMatrix,&lookAtMatrix)
+	mvpUniformaLoc,err := gl.GLGetUniformLocation(shaderProgram,"u_mvp")
+	failOnError(err)
+	gl.GLUniformMatrix4fv(mvpUniformaLoc,&mvp)
+
 	running := true
 	var ev sdl3.Event
+	var cameraPosChanged = true
+	const walkSpeed = 3
 	for running {
 		for sdl3.PollEvent(&ev) {
 			switch ev.Type() {
@@ -137,17 +161,52 @@ func main() {
 				running = false
 			case sdl3.EventKeyDown:
 				keyEvent := ev.KeyboardEvent()
-				if keyEvent.KeyCode() == sdl3.K_ESCAPE{
+				keyCode := keyEvent.KeyCode()
+				if keyCode == sdl3.K_ESCAPE{
 					running = false
+				}else if keyCode == sdl3.K_w{
+					v := pmath.Vector3Multiple(&cameraFront,walkSpeed)
+					cameraPos = pmath.Vector3Add(&cameraPos,&v)
+					cameraPosChanged = true
+				}else if keyCode == sdl3.K_a{
+					v := pmath.Vector3Cross(&cameraFront,&cameraUp).Normalized()
+					v = pmath.Vector3Multiple(&v,walkSpeed)
+					cameraPos = pmath.Vector3Sub(&cameraPos,&v)
+					cameraPosChanged = true
+				}else if keyCode == sdl3.K_d{
+					v := pmath.Vector3Cross(&cameraFront,&cameraUp).Normalized()
+					v = pmath.Vector3Multiple(&v,walkSpeed)
+					cameraPos = pmath.Vector3Add(&cameraPos,&v)
+					cameraPosChanged = true
+
+				}else if keyCode == sdl3.K_s{
+					v := pmath.Vector3Multiple(&cameraFront,walkSpeed)
+					cameraPos = pmath.Vector3Sub(&cameraPos,&v)
+					cameraPosChanged = true
 				}
 			default:
 			}
+		}
+
+		if cameraPosChanged{
+			lookAt := pmath.Vector3Add(&cameraPos,&cameraFront)
+			lookAtMatrix = pmath.Matrix4LookAt(
+					cameraPos,
+					lookAt,
+					cameraUp,
+			)
+
+			mvp := pmath.Matrix4Mul(&projectionMatrix,&lookAtMatrix)
+			mvpUniformaLoc,err := gl.GLGetUniformLocation(shaderProgram,"u_mvp")
+			failOnError(err)
+			gl.GLUniformMatrix4fv(mvpUniformaLoc,&mvp)
 		}
 
 		gl.GLClear(gl.GLClearMask_ColorBuffer)
 		gl.GLDrawArrays(gl.GLDrawArraysMode_Triangles_Fan, 0, 4)
 
 		failOnError(win.Swap())
+		cameraPosChanged = false
 	}
 }
 
