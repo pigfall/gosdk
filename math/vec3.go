@@ -48,11 +48,11 @@ func Vector3Add(a, b *Vec3) Vec3 {
 	}
 }
 
-func Vector3Multiple(v *Vec3,scalar float32)Vec3{
+func Vector3Multiple(v *Vec3, scalar float32) Vec3 {
 	return Vec3{
-		X:v.X * scalar,
-		Y:v.Y * scalar,
-		Z:v.Z * scalar,
+		X: v.X * scalar,
+		Y: v.Y * scalar,
+		Z: v.Z * scalar,
 	}
 }
 

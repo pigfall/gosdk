@@ -8,22 +8,21 @@ type Event struct {
 	E sdl.Event
 }
 
-type KeyboardEvent struct{
+type KeyboardEvent struct {
 	E *sdl.KeyboardEvent
 }
-
 
 func (e *Event) Type() EventType {
 	return EventType(e.E.Type)
 }
 
-func (e *Event) KeyboardEvent()*KeyboardEvent{
+func (e *Event) KeyboardEvent() *KeyboardEvent {
 	return &KeyboardEvent{
-		E:e.E.KeyboardEvent(),
+		E: e.E.KeyboardEvent(),
 	}
 }
 
-func (e *KeyboardEvent) KeyCode()KeyCode{
+func (e *KeyboardEvent) KeyCode() KeyCode {
 	return KeyCode(e.E.Key)
 }
 

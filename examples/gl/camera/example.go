@@ -17,22 +17,27 @@ import (
 const vertexShaderSource = `#version 410 core
 layout (location=0) in vec3 in_pos;
 layout (location=1) in vec2 in_tex_coord;
+layout (location=2) in vec3 in_color;
 out vec2 v_tex_coord;
+out vec3 v_color;
 uniform mat4 u_mvp;
 
 void main(){
-	gl_Position = u_mvp * vec4(in_pos,1.0);
-	v_tex_coord = in_tex_coord;
+    gl_Position = u_mvp * vec4(in_pos,1.0);
+    v_tex_coord = in_tex_coord;
+    v_color = in_color;
 }
 `
 
 const fragmentShaderSource = `#version 410 core
 in vec2 v_tex_coord;
+in vec3 v_color;
 uniform sampler2D u_texture;
 out vec4 FragColor;
 
 void main(){
-	FragColor = texture(u_texture,v_tex_coord);
+    // tint the texture by the per-vertex color so each face can have its own color
+    FragColor = texture(u_texture, v_tex_coord) * vec4(v_color, 1.0);
 }
 `
 
@@ -75,79 +80,105 @@ func main() {
 	failOnError(err)
 	gl.GLUseProgram(shaderProgram)
 
-    // Cube vertices: position (x,y,z) + texcoord (u,v)
-    positions := []float32{
-        // Front face
-        -50, 50, 50, 0.0, 1.0,
-        -50, -50, 50, 0.0, 0.0,
-        50, -50, 50, 1.0, 0.0,
-        50, 50, 50, 1.0, 1.0,
-        // Back face
-        -50, 50, -50, 1.0, 1.0,
-        -50, -50, -50, 1.0, 0.0,
-        50, -50, -50, 0.0, 0.0,
-        50, 50, -50, 0.0, 1.0,
-    }
+	// Cube vertices: position (x,y,z) + texcoord (u,v) + color (r,g,b)
+	// 24 vertices (4 per face) so each face can have a distinct color
+	positions := []float32{
+		// Front face (red)
+		-50, 50, 50, 0.0, 1.0, 1.0, 0.0, 0.0,
+		-50, -50, 50, 0.0, 0.0, 1.0, 0.0, 0.0,
+		50, -50, 50, 1.0, 0.0, 1.0, 0.0, 0.0,
+		50, 50, 50, 1.0, 1.0, 1.0, 0.0, 0.0,
+		// Back face (green)
+		-50, 50, -50, 1.0, 1.0, 0.0, 1.0, 0.0,
+		-50, -50, -50, 1.0, 0.0, 0.0, 1.0, 0.0,
+		50, -50, -50, 0.0, 0.0, 0.0, 1.0, 0.0,
+		50, 50, -50, 0.0, 1.0, 0.0, 1.0, 0.0,
+		// Right face (blue)
+		50, 50, 50, 0.0, 1.0, 0.0, 0.0, 1.0,
+		50, -50, 50, 0.0, 0.0, 0.0, 0.0, 1.0,
+		50, -50, -50, 1.0, 0.0, 0.0, 0.0, 1.0,
+		50, 50, -50, 1.0, 1.0, 0.0, 0.0, 1.0,
+		// Left face (yellow)
+		-50, 50, -50, 0.0, 1.0, 1.0, 1.0, 0.0,
+		-50, -50, -50, 0.0, 0.0, 1.0, 1.0, 0.0,
+		-50, -50, 50, 1.0, 0.0, 1.0, 1.0, 0.0,
+		-50, 50, 50, 1.0, 1.0, 1.0, 1.0, 0.0,
+		// Top face (magenta)
+		-50, 50, -50, 0.0, 1.0, 1.0, 0.0, 1.0,
+		-50, 50, 50, 0.0, 0.0, 1.0, 0.0, 1.0,
+		50, 50, 50, 1.0, 0.0, 1.0, 0.0, 1.0,
+		50, 50, -50, 1.0, 1.0, 1.0, 0.0, 1.0,
+		// Bottom face (cyan)
+		-50, -50, 50, 0.0, 1.0, 0.0, 1.0, 1.0,
+		-50, -50, -50, 0.0, 0.0, 0.0, 1.0, 1.0,
+		50, -50, -50, 1.0, 0.0, 0.0, 1.0, 1.0,
+		50, -50, 50, 1.0, 1.0, 0.0, 1.0, 1.0,
+	}
 
-    // Indices for the cube (12 triangles)
-    indices := []uint32{
-        // front
-        0, 1, 2, 0, 2, 3,
-        // right
-        3, 2, 6, 3, 6, 7,
-        // back
-        7, 6, 5, 7, 5, 4,
-        // left
-        4, 5, 1, 4, 1, 0,
-        // top
-        4, 0, 3, 4, 3, 7,
-        // bottom
-        1, 5, 6, 1, 6, 2,
-    }
+	// Indices for the cube (12 triangles), using 24 vertices (4 per face)
+	indices := []uint32{
+		// front (vertices 0-3)
+		0, 1, 2, 0, 2, 3,
+		// back (vertices 4-7)
+		4, 5, 6, 4, 6, 7,
+		// right (vertices 8-11)
+		8, 9, 10, 8, 10, 11,
+		// left (vertices 12-15)
+		12, 13, 14, 12, 14, 15,
+		// top (vertices 16-19)
+		16, 17, 18, 16, 18, 19,
+		// bottom (vertices 20-23)
+		20, 21, 22, 20, 22, 23,
+	}
 
-    // convert positions to bytes
-    positionsBytes := make([]byte, len(positions)*4)
-    for i, v := range positions {
-        binary.LittleEndian.PutUint32(positionsBytes[i*4:(i+1)*4], math.Float32bits(v))
-    }
+	// convert positions to bytes
+	positionsBytes := make([]byte, len(positions)*4)
+	for i, v := range positions {
+		binary.LittleEndian.PutUint32(positionsBytes[i*4:(i+1)*4], math.Float32bits(v))
+	}
 
-    // convert indices to bytes (uint32)
-    indicesBytes := make([]byte, len(indices)*4)
-    for i, v := range indices {
-        binary.LittleEndian.PutUint32(indicesBytes[i*4:(i+1)*4], v)
-    }
+	// convert indices to bytes (uint32)
+	indicesBytes := make([]byte, len(indices)*4)
+	for i, v := range indices {
+		binary.LittleEndian.PutUint32(indicesBytes[i*4:(i+1)*4], v)
+	}
 
-    vao, err := gl.GLGenVertexArray()
-    failOnError(err)
-    gl.GLBindVertexArray(vao)
+	vao, err := gl.GLGenVertexArray()
+	failOnError(err)
+	gl.GLBindVertexArray(vao)
 
-    // vertex buffer
-    vbo, err := gl.GLGenBuffer()
-    failOnError(err)
-    gl.GLBindBuffer(gl.GLBindBufferTarget_ArrayBuffer, vbo)
-    gl.GLBufferData(
-        gl.GLBindBufferTarget_ArrayBuffer,
-        len(positionsBytes),
-        positionsBytes,
-        gl.GLBufferDataUsage_StaticDraw,
-    )
-    // position
-    gl.GLVertexAttribPointer(0, 3, gl.GLPrimitiveType_Float32, 5*4, 0)
-    gl.GLEnableVertexAttribArray(0)
-    // texcoord
-    gl.GLVertexAttribPointer(1, 2, gl.GLPrimitiveType_Float32, 5*4, 3*4)
-    gl.GLEnableVertexAttribArray(1)
+	// vertex buffer
+	vbo, err := gl.GLGenBuffer()
+	failOnError(err)
+	gl.GLBindBuffer(gl.GLBindBufferTarget_ArrayBuffer, vbo)
+	gl.GLBufferData(
+		gl.GLBindBufferTarget_ArrayBuffer,
+		len(positionsBytes),
+		positionsBytes,
+		gl.GLBufferDataUsage_StaticDraw,
+	)
+	// position (3 floats)
+	// stride: 8 floats per vertex (3 pos, 2 tex, 3 color)
+	stride := int32(8 * 4)
+	gl.GLVertexAttribPointer(0, 3, gl.GLPrimitiveType_Float32, stride, 0)
+	gl.GLEnableVertexAttribArray(0)
+	// texcoord (2 floats) offset 3*4
+	gl.GLVertexAttribPointer(1, 2, gl.GLPrimitiveType_Float32, stride, 3*4)
+	gl.GLEnableVertexAttribArray(1)
+	// color (3 floats) offset (3+2)*4 = 5*4
+	gl.GLVertexAttribPointer(2, 3, gl.GLPrimitiveType_Float32, stride, 5*4)
+	gl.GLEnableVertexAttribArray(2)
 
-    // element/index buffer
-    ebo, err := gl.GLGenBuffer()
-    failOnError(err)
-    gl.GLBindBuffer(gl.GLBindBufferTarget_ElementArrayBuffer, ebo)
-    gl.GLBufferData(
-        gl.GLBindBufferTarget_ElementArrayBuffer,
-        len(indicesBytes),
-        indicesBytes,
-        gl.GLBufferDataUsage_StaticDraw,
-    )
+	// element/index buffer
+	ebo, err := gl.GLGenBuffer()
+	failOnError(err)
+	gl.GLBindBuffer(gl.GLBindBufferTarget_ElementArrayBuffer, ebo)
+	gl.GLBufferData(
+		gl.GLBindBufferTarget_ElementArrayBuffer,
+		len(indicesBytes),
+		indicesBytes,
+		gl.GLBufferDataUsage_StaticDraw,
+	)
 
 	texture, err := gl.GLGenTexture()
 	failOnError(err)
@@ -171,33 +202,51 @@ func main() {
 		rgbaImg.Pix,
 	)
 
-	cameraUp := pmath.Vec3{0,1,0}
-	cameraFront := pmath.Vec3{0,0,-1}
-	cameraPos := pmath.Vec3{0,0,600}
-	lookAt := pmath.Vector3Add(&cameraPos,&cameraFront)
+	cameraUp := pmath.Vec3{0, 1, 0}
+	cameraFront := pmath.Vec3{0, 0, -1}
+	cameraPos := pmath.Vec3{0, 0, 600}
+	// yaw/pitch for camera rotation (degrees)
+	cameraYaw := -90.0
+	cameraPitch := 0.0
+	// helper to recalculate cameraFront from yaw/pitch
+	updateCameraFront := func() {
+		// convert degrees to radians
+		yawRad := cameraYaw * math.Pi / 180.0
+		pitchRad := cameraPitch * math.Pi / 180.0
+		x := math.Cos(yawRad) * math.Cos(pitchRad)
+		y := math.Sin(pitchRad)
+		z := math.Sin(yawRad) * math.Cos(pitchRad)
+		cameraFront = pmath.Vec3{float32(x), float32(y), float32(z)}
+		// normalize
+		cameraFront = cameraFront.Normalized()
+	}
+	// initialize front from yaw/pitch
+	updateCameraFront()
+	lookAt := pmath.Vector3Add(&cameraPos, &cameraFront)
 	lookAtMatrix := pmath.Matrix4LookAt(
-			cameraPos,
-			lookAt,
-			cameraUp,
+		cameraPos,
+		lookAt,
+		cameraUp,
 	)
 	projectionMatrix := pmath.Matrix4Perspective(
-			45 * math.Pi/180,
-			1.0,
-			0.025,
-			2048,
+		45*math.Pi/180,
+		1.0,
+		0.025,
+		2048,
 	)
-	mvp := pmath.Matrix4Mul(&projectionMatrix,&lookAtMatrix)
-    mvpUniformaLoc,err := gl.GLGetUniformLocation(shaderProgram,"u_mvp")
-    failOnError(err)
-    gl.GLUniformMatrix4fv(mvpUniformaLoc,&mvp)
+	mvp := pmath.Matrix4Mul(&projectionMatrix, &lookAtMatrix)
+	mvpUniformaLoc, err := gl.GLGetUniformLocation(shaderProgram, "u_mvp")
+	failOnError(err)
+	gl.GLUniformMatrix4fv(mvpUniformaLoc, &mvp)
 
-    // Enable depth testing so the cube renders correctly in 3D
-    gl.GLEnable(gl.GLCapability_DEPTH_TEST)
+	// Enable depth testing so the cube renders correctly in 3D
+	gl.GLEnable(gl.GLCapability_DEPTH_TEST)
 
 	running := true
 	var ev sdl3.Event
-	var cameraPosChanged = true
-	const walkSpeed = 3
+	var cameraUpdated = true
+	const walkSpeed = 10
+	const turnSpeed = 3.0 // degrees per key press
 	for running {
 		for sdl3.PollEvent(&ev) {
 			switch ev.Type() {
@@ -206,55 +255,77 @@ func main() {
 			case sdl3.EventKeyDown:
 				keyEvent := ev.KeyboardEvent()
 				keyCode := keyEvent.KeyCode()
-				if keyCode == sdl3.K_ESCAPE{
+				if keyCode == sdl3.K_ESCAPE {
 					running = false
-				}else if keyCode == sdl3.K_w{
-					v := pmath.Vector3Multiple(&cameraFront,walkSpeed)
-					cameraPos = pmath.Vector3Add(&cameraPos,&v)
-					cameraPosChanged = true
-				}else if keyCode == sdl3.K_a{
-					v := pmath.Vector3Cross(&cameraFront,&cameraUp).Normalized()
-					v = pmath.Vector3Multiple(&v,walkSpeed)
-					cameraPos = pmath.Vector3Sub(&cameraPos,&v)
-					cameraPosChanged = true
-				}else if keyCode == sdl3.K_d{
-					v := pmath.Vector3Cross(&cameraFront,&cameraUp).Normalized()
-					v = pmath.Vector3Multiple(&v,walkSpeed)
-					cameraPos = pmath.Vector3Add(&cameraPos,&v)
-					cameraPosChanged = true
+				} else if keyCode == sdl3.K_w {
+					v := pmath.Vector3Multiple(&cameraFront, walkSpeed)
+					cameraPos = pmath.Vector3Add(&cameraPos, &v)
+					cameraUpdated = true
+				} else if keyCode == sdl3.K_a {
+					v := pmath.Vector3Cross(&cameraFront, &cameraUp).Normalized()
+					v = pmath.Vector3Multiple(&v, walkSpeed)
+					cameraPos = pmath.Vector3Sub(&cameraPos, &v)
+					cameraUpdated = true
+				} else if keyCode == sdl3.K_d {
+					v := pmath.Vector3Cross(&cameraFront, &cameraUp).Normalized()
+					v = pmath.Vector3Multiple(&v, walkSpeed)
+					cameraPos = pmath.Vector3Add(&cameraPos, &v)
+					cameraUpdated = true
 
-				}else if keyCode == sdl3.K_s{
-					v := pmath.Vector3Multiple(&cameraFront,walkSpeed)
-					cameraPos = pmath.Vector3Sub(&cameraPos,&v)
-					cameraPosChanged = true
+				} else if keyCode == sdl3.K_s {
+					v := pmath.Vector3Multiple(&cameraFront, walkSpeed)
+					cameraPos = pmath.Vector3Sub(&cameraPos, &v)
+					cameraUpdated = true
+				} else if keyCode == sdl3.K_LEFT {
+					cameraYaw -= turnSpeed
+					updateCameraFront()
+					cameraUpdated = true
+				} else if keyCode == sdl3.K_RIGHT {
+					cameraYaw += turnSpeed
+					updateCameraFront()
+					cameraUpdated = true
+				} else if keyCode == sdl3.K_UP {
+					cameraPitch += turnSpeed
+					if cameraPitch > 89.0 {
+						cameraPitch = 89.0
+					}
+					updateCameraFront()
+					cameraUpdated = true
+				} else if keyCode == sdl3.K_DOWN {
+					cameraPitch -= turnSpeed
+					if cameraPitch < -89.0 {
+						cameraPitch = -89.0
+					}
+					updateCameraFront()
+					cameraUpdated = true
 				}
 			default:
 			}
 		}
 
-        if cameraPosChanged{
-            lookAt := pmath.Vector3Add(&cameraPos,&cameraFront)
-            lookAtMatrix = pmath.Matrix4LookAt(
-                    cameraPos,
-                    lookAt,
-                    cameraUp,
-            )
+		if cameraUpdated {
+			lookAt := pmath.Vector3Add(&cameraPos, &cameraFront)
+			lookAtMatrix = pmath.Matrix4LookAt(
+				cameraPos,
+				lookAt,
+				cameraUp,
+			)
 
-            mvp := pmath.Matrix4Mul(&projectionMatrix,&lookAtMatrix)
-            mvpUniformaLoc,err := gl.GLGetUniformLocation(shaderProgram,"u_mvp")
-            failOnError(err)
-            gl.GLUniformMatrix4fv(mvpUniformaLoc,&mvp)
-        }
+			mvp := pmath.Matrix4Mul(&projectionMatrix, &lookAtMatrix)
+			mvpUniformaLoc, err := gl.GLGetUniformLocation(shaderProgram, "u_mvp")
+			failOnError(err)
+			gl.GLUniformMatrix4fv(mvpUniformaLoc, &mvp)
+		}
 
-        // clear color and depth
-        gl.GLClear(gl.GLClearMask_ColorBuffer | gl.GLClearMask_DepthBuffer)
+		// clear color and depth
+		gl.GLClear(gl.GLClearMask_ColorBuffer | gl.GLClearMask_DepthBuffer)
 
-        // draw elements from the EBO
-        // 36 indices for the cube
-        gl.GLDrawElements(gl.GLDrawArraysMode_Triangles, 36, 0)
+		// draw elements from the EBO
+		// 36 indices for the cube
+		gl.GLDrawElements(gl.GLDrawArraysMode_Triangles, 36, 0)
 
 		failOnError(win.Swap())
-		cameraPosChanged = false
+		cameraUpdated = false
 	}
 }
 
