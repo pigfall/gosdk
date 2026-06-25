@@ -1,69 +1,66 @@
 package net
 
-import(
-	"sync"
+import (
 	"fmt"
-		"strings"
+	"strings"
+	"sync"
 )
 
-
-
-type IpPool struct{
-	beenUsed map[string]*IpWithMask
+type IpPool struct {
+	beenUsed  map[string]*IpWithMask
 	baseIpNet *IpWithMask
-	l sync.Mutex
+	l         sync.Mutex
 }
 
-func NewIpPool(ipNet *IpWithMask,hasBeenUsed []*IpWithMask) (*IpPool,error){
-	var invalidUsedIpNets = make([]*IpWithMask,0)
-	for _,used := range hasBeenUsed{
-		if !ipNet.Contains(used){
-			invalidUsedIpNets  = append(invalidUsedIpNets,used)
+func NewIpPool(ipNet *IpWithMask, hasBeenUsed []*IpWithMask) (*IpPool, error) {
+	var invalidUsedIpNets = make([]*IpWithMask, 0)
+	for _, used := range hasBeenUsed {
+		if !ipNet.Contains(used) {
+			invalidUsedIpNets = append(invalidUsedIpNets, used)
 		}
 	}
 
 	if len(invalidUsedIpNets) > 0 {
-		var invalidUsesIpNetsStr = make([]string,0,len(invalidUsedIpNets))
-		for _,v := range invalidUsedIpNets {
-			invalidUsesIpNetsStr  = append(invalidUsesIpNetsStr, v.FormatAsIpSlashMask())
+		var invalidUsesIpNetsStr = make([]string, 0, len(invalidUsedIpNets))
+		for _, v := range invalidUsedIpNets {
+			invalidUsesIpNetsStr = append(invalidUsesIpNetsStr, v.FormatAsIpSlashMask())
 		}
-		return nil,fmt.Errorf(" %s not in ipNet %s",strings.Join(invalidUsesIpNetsStr,","),ipNet.FormatAsIpSlashMask())
+		return nil, fmt.Errorf(" %s not in ipNet %s", strings.Join(invalidUsesIpNetsStr, ","), ipNet.FormatAsIpSlashMask())
 	}
 
 	beenUsed := make(map[string]*IpWithMask)
-	for _,v := range hasBeenUsed {
+	for _, v := range hasBeenUsed {
 		beenUsed[v.FormatAsIpSlashMask()] = v
 	}
 
 	return &IpPool{
-		beenUsed:beenUsed,
-		baseIpNet:ipNet,
-	},nil
+		beenUsed:  beenUsed,
+		baseIpNet: ipNet,
+	}, nil
 }
 
-
-func (this *IpPool) Take()(*IpWithMask,error){
+func (this *IpPool) Take() (*IpWithMask, error) {
 	this.l.Lock()
 	defer this.l.Unlock()
 	var take *IpWithMask
 	this.baseIpNet.ForEachIpInThisCidr(
-		func(ipNet *IpWithMask)(stop bool,err error){
-			if used  := this.beenUsed[ipNet.FormatAsIpSlashMask()];used != nil{
-				return false,nil
+		func(ipNet *IpWithMask) (stop bool, err error) {
+			if used := this.beenUsed[ipNet.FormatAsIpSlashMask()]; used != nil {
+				return false, nil
 			}
-			take =ipNet
-			return true,nil
+			take = ipNet
+			return true, nil
 		},
 	)
-	if take == nil{
-		return nil,fmt.Errorf("No Aviable ip is this ip pool")
+	if take == nil {
+		return nil, fmt.Errorf("No Aviable ip is this ip pool")
 	}
 
-	return take,nil
+	return take, nil
 }
 
-func (this *IpPool) Release(ipNet *IpWithMask){
+func (this *IpPool) Release(ipNet *IpWithMask) {
 	this.l.Lock()
 	defer this.l.Unlock()
-	delete(this.beenUsed,ipNet.FormatAsIpSlashMask())
+	delete(this.beenUsed, ipNet.FormatAsIpSlashMask())
 }

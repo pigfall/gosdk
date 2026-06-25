@@ -1,14 +1,14 @@
 package main
 
-import(
-	"os"
+import (
 	"fmt"
-		"github.com/spf13/cobra"
+	"github.com/spf13/cobra"
+	"os"
 
-		"github.com/pigfall/gosdk/internal/cert"
+	"github.com/pigfall/gosdk/internal/cert"
 )
 
-func main(){
+func main() {
 	rootCmd := cobra.Command{
 		Use: "cert",
 	}
@@ -19,7 +19,7 @@ func main(){
 		cert.RSACommand(),
 	)
 
-	if err := rootCmd.Execute();err != nil{
-		fmt.Fprintf(os.Stderr, "failed: %v\n",err)
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintf(os.Stderr, "failed: %v\n", err)
 	}
 }

@@ -14,10 +14,10 @@ func UnMarshalByFile(filepath string, v interface{}, unmarshal func([]byte, inte
 
 }
 
-func MarshalToFile(filepath string, v interface{},marshalFunc func(v interface{})([]byte,error))error{
-	bytes,err := marshalFunc(v)
-	if err != nil{
+func MarshalToFile(filepath string, v interface{}, marshalFunc func(v interface{}) ([]byte, error)) error {
+	bytes, err := marshalFunc(v)
+	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(filepath,bytes,os.ModePerm)
+	return ioutil.WriteFile(filepath, bytes, os.ModePerm)
 }

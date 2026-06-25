@@ -1,8 +1,8 @@
 package debug
 
-import(
-    "testing"
+import (
+	"testing"
 )
 
-func TestSendMail(t *testing.T){
+func TestSendMail(t *testing.T) {
 }

@@ -1,11 +1,11 @@
 package reflect
 
-import(
-		"testing"
+import (
+	"testing"
 )
 
-func TestGetEmptyField(t *testing.T){
-	type T struct{
+func TestGetEmptyField(t *testing.T) {
+	type T struct {
 		F1 string
 		F2 string
 	}

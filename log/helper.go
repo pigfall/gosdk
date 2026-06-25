@@ -1,23 +1,20 @@
 package log
 
-import(
+import (
 	"fmt"
 	kit_log "github.com/go-kit/kit/log"
 )
 
-
-
 type LogLevel uint
 
-const LevelKey ="level"
+const LevelKey = "level"
 
-const(
+const (
 	LevelDebug LogLevel = iota
-	LevelInfo 
+	LevelInfo
 	LevelWarn
 	LevelError
 )
-
 
 // Helper is a logger helper.
 type Helper struct {
@@ -27,15 +24,14 @@ type Helper struct {
 	err   Logger_Log
 }
 
-
 type emptyLog struct{}
 
-func(this *emptyLog) Log(kv ...interface{})error{
+func (this *emptyLog) Log(kv ...interface{}) error {
 	return nil
 }
 
 // NewHelper new a logger helper.
-func NewHelper(name string, rawLogger Logger_Log,level LogLevel) *Helper {
+func NewHelper(name string, rawLogger Logger_Log, level LogLevel) *Helper {
 	logger := kit_log.With(rawLogger, "module", name)
 	debugLog := DebugLogger(logger)
 	if LevelDebug < level {
@@ -43,15 +39,15 @@ func NewHelper(name string, rawLogger Logger_Log,level LogLevel) *Helper {
 	}
 	infoLog := InfoLogger(logger)
 	if LevelInfo < level {
-		infoLog= &emptyLog{}
+		infoLog = &emptyLog{}
 	}
-	warnLog :=WarnLogger(logger)
-	if LevelWarn < level{
-		warnLog= &emptyLog{}
+	warnLog := WarnLogger(logger)
+	if LevelWarn < level {
+		warnLog = &emptyLog{}
 	}
-	errLog :=ErrorLogger(logger)
-	if LevelError < level{
-		errLog= &emptyLog{}
+	errLog := ErrorLogger(logger)
+	if LevelError < level {
+		errLog = &emptyLog{}
 	}
 	return &Helper{
 		debug: debugLog,
@@ -122,18 +118,17 @@ func (h *Helper) Errorw(kv ...interface{}) {
 }
 
 func DebugLogger(log Logger_Log) Logger_Log {
-	return kit_log.With(log,LevelKey,"DEBUG")
+	return kit_log.With(log, LevelKey, "DEBUG")
 }
 
 func InfoLogger(log Logger_Log) Logger_Log {
-	return kit_log.With(log,LevelKey,"INFO")
+	return kit_log.With(log, LevelKey, "INFO")
 }
 
 func WarnLogger(log Logger_Log) Logger_Log {
-	return kit_log.With(log, LevelKey,"WARN")
+	return kit_log.With(log, LevelKey, "WARN")
 }
 
 func ErrorLogger(log Logger_Log) Logger_Log {
-	return kit_log.With(log, LevelKey,"ERROR")
+	return kit_log.With(log, LevelKey, "ERROR")
 }
-

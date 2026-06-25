@@ -1,10 +1,9 @@
 package net
 
-import(
-		
+import (
 	"net"
 )
 
-func IsIpv6(ip net.IP)bool{
+func IsIpv6(ip net.IP) bool {
 	return ip.To4() == nil
 }

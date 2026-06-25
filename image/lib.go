@@ -1,13 +1,12 @@
 package image
 
-import(
+import (
 	"image"
 )
 
-
 func ToRGBA(img image.Image) *image.RGBA {
-	rgba,ok := img.(*image.RGBA)
-	if ok{
+	rgba, ok := img.(*image.RGBA)
+	if ok {
 		return rgba
 	}
 

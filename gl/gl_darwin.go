@@ -8,9 +8,8 @@ import (
 	"strings"
 	"unsafe"
 
-  
 	gl "github.com/go-gl/gl/v4.1-core/gl"
-  
+
 	"github.com/pigfall/gosdk/math"
 )
 
@@ -160,12 +159,12 @@ func GLGenBuffer() (GLBuffer, error) {
 	return GLBuffer(buffer), nil
 }
 
-func MustGenBuffer()GLBuffer{
-  buffer,err:=GLGenBuffer()
-  if err != nil{
-    panic(err)
-  }
-  return buffer
+func MustGenBuffer() GLBuffer {
+	buffer, err := GLGenBuffer()
+	if err != nil {
+		panic(err)
+	}
+	return buffer
 }
 
 func GLBindBuffer(target GLBindBufferTarget, buffer GLBuffer) {
@@ -236,12 +235,12 @@ func GLUniformMatrix4fv(location int32, matrix *math.Matrix4) {
 	gl.UniformMatrix4fv(location, 1, false, &matrix.Values[0])
 }
 
-func GLUniform1i(location int32,value int32){
-  gl.Uniform1i(location,value)
+func GLUniform1i(location int32, value int32) {
+	gl.Uniform1i(location, value)
 }
 
-func GLUniform4f(location int32,v1,v2,v3,v4 float32){
-  gl.Uniform4f(location,v1,v2,v3,v4)
+func GLUniform4f(location int32, v1, v2, v3, v4 float32) {
+	gl.Uniform4f(location, v1, v2, v3, v4)
 }
 
 func GLViewport(x, y, width, height int32) {
@@ -262,8 +261,8 @@ func GLBindTexture(target GLBindTextureTarget, texture GLTexture) {
 	gl.BindTexture(target.ToGLType(), texture.ToGLType())
 }
 
-func GLActiveTexture(target GLActiveTextureTarget){
-  gl.ActiveTexture(target.ToGLType())
+func GLActiveTexture(target GLActiveTextureTarget) {
+	gl.ActiveTexture(target.ToGLType())
 }
 
 func GLTexImage2D(target GLBindTextureTarget, level int32, internalFormat GLInternalColorFormat, width, height int32, border int32, sourceImageFormat GLSourceImageColorFormat, pixelDataType GLPrimitiveType, pixels []byte) {
@@ -359,12 +358,12 @@ func GLBindVertexArray(vao GLVertexArray) {
 	gl.BindVertexArray(vao.ToGLType())
 }
 
-func GLVersion() string{
-  return gl.GoStr(gl.GetString(gl.VERSION))
+func GLVersion() string {
+	return gl.GoStr(gl.GetString(gl.VERSION))
 }
 
 func GLShaderLanguageVersion() string {
-  return gl.GoStr(gl.GetString(gl.SHADING_LANGUAGE_VERSION))
+	return gl.GoStr(gl.GetString(gl.SHADING_LANGUAGE_VERSION))
 }
 
 func GLGetError() error {
@@ -381,6 +380,6 @@ func GLDeleteTexture(texture GLTexture) {
 	gl.DeleteTextures(1, &t)
 }
 
-func GLCleanStencil(value int32){
-  gl.ClearStencil(value)
+func GLCleanStencil(value int32) {
+	gl.ClearStencil(value)
 }

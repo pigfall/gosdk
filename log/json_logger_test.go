@@ -1,14 +1,12 @@
 package log
 
-import(
+import (
 	"os"
-		"testing"
+	"testing"
 )
 
-
-
-func TestJsonLogger(t *testing.T){
+func TestJsonLogger(t *testing.T) {
 	rawLogger := NewJsonLogger(os.Stdout)
-	logger := NewHelper("test",rawLogger,LevelDebug)
-	logger.Info("key","output msg")
+	logger := NewHelper("test", rawLogger, LevelDebug)
+	logger.Info("key", "output msg")
 }

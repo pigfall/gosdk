@@ -2,42 +2,42 @@ package sdl3
 
 import (
 	"fmt"
-	"github.com/Zyko0/go-sdl3/sdl"
 	"github.com/Zyko0/go-sdl3/bin/binsdl"
+	"github.com/Zyko0/go-sdl3/sdl"
 )
 
-func LoadEmbeddedSDL()(unload func(),err error){
-	defer func(){
+func LoadEmbeddedSDL() (unload func(), err error) {
+	defer func() {
 		e := recover()
-		if e != nil{
-			err = fmt.Errorf("load sdl error: %v",e)
+		if e != nil {
+			err = fmt.Errorf("load sdl error: %v", e)
 		}
 	}()
 
 	lib := binsdl.Load()
-	unload = func(){
+	unload = func() {
 		lib.Unload()
 	}
 
 	return
 }
 
-func Init()error{
+func Init() error {
 	return sdl.Init(sdl.INIT_VIDEO)
 }
 
-func Quit(){
+func Quit() {
 	sdl.Quit()
 }
 
-func CreateWindowWithOpenGL(title string,width, height int,options WindowOption)(*Window,error){
-	w,err :=  sdl.CreateWindow(title,width,height,sdl.WindowFlags(options) | sdl.WINDOW_OPENGL)
-	if err != nil{
-		return nil,err
+func CreateWindowWithOpenGL(title string, width, height int, options WindowOption) (*Window, error) {
+	w, err := sdl.CreateWindow(title, width, height, sdl.WindowFlags(options)|sdl.WINDOW_OPENGL)
+	if err != nil {
+		return nil, err
 	}
-	return &Window{w},nil	
+	return &Window{w}, nil
 }
 
-func PollEvent(ev *Event)bool {
+func PollEvent(ev *Event) bool {
 	return sdl.PollEvent(&ev.E)
 }

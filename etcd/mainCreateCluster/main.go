@@ -1,7 +1,7 @@
-//----------
+// ----------
 // AUTHOR: tzz
 // DESC : 快速创建 etcd 集群
-//----------
+// ----------
 package main
 
 import (

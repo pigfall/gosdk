@@ -1,9 +1,9 @@
 package uuid
 
-import(
-		"testing"
+import (
+	"testing"
 )
 
-func TestTmp(t *testing.T){
+func TestTmp(t *testing.T) {
 	t.Log(GenUUID())
 }

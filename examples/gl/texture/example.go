@@ -9,8 +9,8 @@ import (
 
 	"github.com/pigfall/gosdk/gl"
 	"github.com/pigfall/gosdk/image"
-	"github.com/pigfall/gosdk/sdl3"
 	pmath "github.com/pigfall/gosdk/math"
+	"github.com/pigfall/gosdk/sdl3"
 )
 
 const vertexShaderSource = `#version 410 core
@@ -58,23 +58,23 @@ func main() {
 
 	must(gl.Init())
 
-	lookAt :=pmath.Matrix4LookAt(
+	lookAt := pmath.Matrix4LookAt(
 		pmath.Vec3{X: 0.0, Y: 0.0, Z: 600.0},
 		pmath.Vec3{X: 0.0, Y: 0.0, Z: -1.0},
 		pmath.Vec3{X: 0.0, Y: 1.0, Z: 0.0},
 	)
 	projection := pmath.Matrix4Perspective(
-		45.0 * math.Pi/180,
+		45.0*math.Pi/180,
 		1.0,
 		0.025,
 		2048.0,
 	)
 	mvp := pmath.Matrix4Mul(&projection, &lookAt)
 
-	f,err := os.Open("examples/gl/assets/anya.jpeg")
+	f, err := os.Open("examples/gl/assets/anya.jpeg")
 	must(err)
 	defer f.Close()
-	img,err := jpeg.Decode(f)
+	img, err := jpeg.Decode(f)
 	must(err)
 	rgbaImg := image.ToRGBA(img)
 
@@ -82,7 +82,7 @@ func main() {
 	must(err)
 	gl.GLUseProgram(shaderProgram)
 
-	mvpLoc,err := gl.GLGetUniformLocation(shaderProgram, "u_mvp")
+	mvpLoc, err := gl.GLGetUniformLocation(shaderProgram, "u_mvp")
 	must(err)
 
 	vao, err := gl.GLGenVertexArray()
@@ -92,9 +92,10 @@ func main() {
 	gl.GLUniformMatrix4fv(mvpLoc, &mvp)
 
 	positions := []float32{
+		-50.0, 50.0, 0.0, 0.0, 1.0,
 		-50.0, -50.0, 0.0, 0.0, 0.0,
 		50.0, -50.0, 0.0, 1.0, 0.0,
-		0.0, 50.0, 0.0, 0.5, 1.0,
+		50.0, 50.0, 0.0, 1.0, 1.0,
 	}
 	var positionsBytes []byte = make([]byte, len(positions)*4)
 	for i, v := range positions {
@@ -152,7 +153,7 @@ func main() {
 		}
 
 		gl.GLClear(gl.GLClearMask_ColorBuffer)
-		gl.GLDrawArrays(gl.GLDrawArraysMode_Triangles, 0, 3)
+		gl.GLDrawArrays(gl.GLDrawArraysMode_Triangles_Fan, 0, 4)
 
 		window.Swap()
 	}

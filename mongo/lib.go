@@ -35,7 +35,7 @@ func Connect(uri *MongoURI) (c *Client, err error) {
 	var ctx, cancel = context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 	var client *mg.Client
-    client, err = mg.Connect(ctx, options.Client().ApplyURI(uri.ToString()))
+	client, err = mg.Connect(ctx, options.Client().ApplyURI(uri.ToString()))
 	if err != nil {
 		return
 	}

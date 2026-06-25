@@ -49,7 +49,6 @@ type GLTextureParameterName uint32
 type GLTextureParamterWrapS int32
 type GLTextureParamterWrapT int32
 
-
 // For GLEnable.
 type GLCapability uint32
 

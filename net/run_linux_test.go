@@ -1,13 +1,13 @@
 package net
 
-import(
-		"testing"
+import (
+	"testing"
 )
 
-func TestNewTun(t *testing.T){
+func TestNewTun(t *testing.T) {
 	const tunName = "testTun"
-	tun,err := NewTun(tunName)
-	if err != nil{
+	tun, err := NewTun(tunName)
+	if err != nil {
 		t.Fatal(err)
 	}
 	t.Log(tun)

@@ -121,27 +121,27 @@ func ToString(rv reflect.Value) string {
 }
 
 // panic if rt is not a struct
-func GetJSONFieldKey(rt reflect.Type,fieldName string,removeOmitEmpty bool)(jsonFieldKey string,err error){
-	fieldRt,ifFind := rt.FieldByName(fieldName)
-	if !ifFind{
-		return "",fmt.Errorf("Not found field by name %s in struct %s",fieldName,rt.Name())
+func GetJSONFieldKey(rt reflect.Type, fieldName string, removeOmitEmpty bool) (jsonFieldKey string, err error) {
+	fieldRt, ifFind := rt.FieldByName(fieldName)
+	if !ifFind {
+		return "", fmt.Errorf("Not found field by name %s in struct %s", fieldName, rt.Name())
 	}
 
-	key,ifFind := fieldRt.Tag.Lookup("json")
+	key, ifFind := fieldRt.Tag.Lookup("json")
 	if !ifFind {
-		return "",fmt.Errorf("not found json tag in struct %s with field name %s",rt.Name(),fieldName)
+		return "", fmt.Errorf("not found json tag in struct %s with field name %s", rt.Name(), fieldName)
 	}
 
 	if removeOmitEmpty {
-		values := strings.Split(key,",")
-		filterd := make([]string,0,len(values))
-		for _,v := range values{
+		values := strings.Split(key, ",")
+		filterd := make([]string, 0, len(values))
+		for _, v := range values {
 			if v != "omitempty" {
-				filterd = append(filterd,v)
+				filterd = append(filterd, v)
 			}
 		}
-		key = strings.Join(filterd,",")
+		key = strings.Join(filterd, ",")
 	}
 
-	return key,nil
+	return key, nil
 }

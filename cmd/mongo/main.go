@@ -11,15 +11,15 @@ import (
 
 func main() {
 	cmd := &cobra.Command{
-		Use:"mongo",
+		Use: "mongo",
 	}
 
 	cmd.AddCommand(
 		mongo.ObjectIDCommand(),
 	)
 
-	if err := cmd.Execute();err != nil{
-		fmt.Fprintf(os.Stderr, "failed: %v",err)
+	if err := cmd.Execute(); err != nil {
+		fmt.Fprintf(os.Stderr, "failed: %v", err)
 		os.Exit(1)
 	}
 }

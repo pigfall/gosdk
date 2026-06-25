@@ -1,9 +1,9 @@
 package net
 
-import(
-    "testing"
+import (
+	"testing"
 )
 
-func TestGetIp(t *testing.T){
-    t.Log(GetIp())
+func TestGetIp(t *testing.T) {
+	t.Log(GetIp())
 }

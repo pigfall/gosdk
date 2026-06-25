@@ -1,21 +1,19 @@
 package os
 
-import(
+import (
 	"fmt"
-		"os"
+	"os"
 )
 
-
-
-func MustFindEnvVarAndNotEmpty(envVarName string)(value string,err error) {
-	value,exist:= os.LookupEnv(envVarName)
+func MustFindEnvVarAndNotEmpty(envVarName string) (value string, err error) {
+	value, exist := os.LookupEnv(envVarName)
 	if !exist {
-		return "",fmt.Errorf("EnvVar %s not exists",envVarName)
+		return "", fmt.Errorf("EnvVar %s not exists", envVarName)
 	}
 
-	if len(value) == 0{
-		return "",fmt.Errorf("Found EnvVar %s but length is 0",envVarName)
+	if len(value) == 0 {
+		return "", fmt.Errorf("Found EnvVar %s but length is 0", envVarName)
 	}
 
-	return value,nil
+	return value, nil
 }

@@ -109,14 +109,14 @@ func PemLoadRSAPublicKey(filepath string) (pubKey *rsa.PublicKey, err error) {
 	return
 }
 
-func PemSaveCSRToFile(csr *x509.CertificateRequest,filepath string)error{
+func PemSaveCSRToFile(csr *x509.CertificateRequest, filepath string) error {
 	return fs.CreateThen(
 		filepath,
-		func(file *os.File)error{
+		func(file *os.File) error {
 			return pem.Encode(
 				file,
 				&pem.Block{
-					Type: PEM_BLOCK_TYPE_CSR,
+					Type:  PEM_BLOCK_TYPE_CSR,
 					Bytes: csr.Raw,
 				},
 			)

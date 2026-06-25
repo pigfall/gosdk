@@ -3,9 +3,7 @@ package gl
 // Auto generated, do not edit.
 
 import (
-  
 	gl "github.com/go-gl/gl/v3.0/gles2"
-  
 )
 
 const (
@@ -24,9 +22,9 @@ const (
 	GLPrimitiveType_UnsignedByte GLPrimitiveType = gl.UNSIGNED_BYTE
 	GLPrimitiveType_UnsignedInt  GLPrimitiveType = gl.UNSIGNED_INT
 
-	GLDrawArraysMode_Triangles GLDrawArraysMode = gl.TRIANGLES
+	GLDrawArraysMode_Triangles     GLDrawArraysMode = gl.TRIANGLES
 	GLDrawArraysMode_Triangles_Fan GLDrawArraysMode = gl.TRIANGLE_FAN
-	GLDrawArraysMode_Line_Loop GLDrawArraysMode = gl.LINE_LOOP
+	GLDrawArraysMode_Line_Loop     GLDrawArraysMode = gl.LINE_LOOP
 
 	GLBufferDataUsage_StaticDraw  GLBufferDataUsage = gl.STATIC_DRAW
 	GLBufferDataUsage_DynamicDraw GLBufferDataUsage = gl.DYNAMIC_DRAW
@@ -35,8 +33,8 @@ const (
 	GLClearMask_DepthBuffer   GLClearMask = gl.DEPTH_BUFFER_BIT
 	GLClearMask_StencilBuffer GLClearMask = gl.STENCIL_BUFFER_BIT
 
-	GLBindTextureTarget_Texture2D GLBindTextureTarget = gl.TEXTURE_2D
-  GLActiveTextureTarget_Texture0 GLActiveTextureTarget = gl.TEXTURE0
+	GLBindTextureTarget_Texture2D  GLBindTextureTarget   = gl.TEXTURE_2D
+	GLActiveTextureTarget_Texture0 GLActiveTextureTarget = gl.TEXTURE0
 
 	// GLTextureParamterName
 	GLTextureParamterName_Texture_Wrap_T     GLTextureParameterName = gl.TEXTURE_WRAP_T
@@ -65,7 +63,7 @@ const (
 	GLBlendFunction_OneMinusSrcAlpha GLBlendFunction = gl.ONE_MINUS_SRC_ALPHA
 
 	// GLStencilFunc
-	GLStencilFunc_Equal GLStencilFuncEnum = gl.EQUAL
+	GLStencilFunc_Equal  GLStencilFuncEnum = gl.EQUAL
 	GLStencilFunc_Always GLStencilFuncEnum = gl.ALWAYS
 
 	// GLStencilOp

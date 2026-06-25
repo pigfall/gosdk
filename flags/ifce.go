@@ -1,6 +1,6 @@
 package flags
 
-type Param interface{
+type Param interface {
 	SetFlag()
-	Validate()error
+	Validate() error
 }

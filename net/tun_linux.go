@@ -6,7 +6,6 @@ type Tun struct {
 	TunTapBase
 }
 
-
 func NewTun(devName string) (ITun, error) {
 	fd, err := newTunTap(TUN, devName)
 	if err != nil {

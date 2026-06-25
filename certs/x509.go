@@ -18,8 +18,8 @@ SignCrt: 签名证书
 */
 
 // 生成 ca 证书模板, 只要区别就是:
-//c.BasicConstraintsValid= true
-//c.IsCA= true
+// c.BasicConstraintsValid= true
+// c.IsCA= true
 func NewX509CaCrtTpl(
 	subject pkix.Name,
 	notBefore time.Time,

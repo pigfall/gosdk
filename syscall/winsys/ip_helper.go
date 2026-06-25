@@ -22,7 +22,7 @@ func LoadIpHelperDLL() error {
 	return nil
 }
 
-//func GetIpForwardTable(pIpForwardTable PMIB_IPFORWARDTABLE, pdwSize *uint32, bOrder bool) (DWORD, error) {
+// func GetIpForwardTable(pIpForwardTable PMIB_IPFORWARDTABLE, pdwSize *uint32, bOrder bool) (DWORD, error) {
 func GetIpForwardTable() ([]*MIB_IPFORWARDROW, error) {
 	procdure, err := ipHelperDLL.FindProc("GetIpForwardTable")
 	if err != nil {

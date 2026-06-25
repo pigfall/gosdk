@@ -1,34 +1,31 @@
 package bytes
 
-import(
-		"testing"
+import (
+	"testing"
 )
 
-
-func TestHowManyBitIsOneInByte(t *testing.T){
+func TestHowManyBitIsOneInByte(t *testing.T) {
 	b := byte(1)
 	res := HowManyBitIsOneInByte(b)
-	if res != 1{
+	if res != 1 {
 		t.Fatal("unexpted")
 	}
 
 	b = byte(2)
 	res = HowManyBitIsOneInByte(b)
-	if res != 1{
+	if res != 1 {
 		t.Fatal("unexpted")
 	}
 
 	b = byte(3)
 	res = HowManyBitIsOneInByte(b)
-	if res != 2{
+	if res != 2 {
 		t.Fatal("unexpted")
 	}
-	
-	b= byte(255)
+
+	b = byte(255)
 	res = HowManyBitIsOneInByte(b)
-	if res != 8{
+	if res != 8 {
 		t.Fatal("unexpted")
 	}
 }
-
-

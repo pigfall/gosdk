@@ -1,26 +1,23 @@
 package expect
 
-import(
-    "regexp"
+import (
+	"regexp"
 )
 
-type Expecter struct{
+type Expecter struct {
 }
 
+func (this *Expecter) Cmd() *Expecter {
 
-func (this *Expecter) Cmd()*Expecter{
-
-    return nil
+	return nil
 }
 
-func (this *Expecter) Expect(reg *regexp.Regexp)(*Expecter){
+func (this *Expecter) Expect(reg *regexp.Regexp) *Expecter {
 
-    return nil
+	return nil
 }
 
+func (this *Expecter) Run() error {
 
-func (this *Expecter) Run()(error){
-
-    return nil
+	return nil
 }
-

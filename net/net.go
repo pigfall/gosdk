@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func GetIp() string{
+func GetIp() string {
 
 	addrs, err := goNet.InterfaceAddrs()
 
@@ -21,9 +21,9 @@ func GetIp() string{
 		if ipnet, ok := address.(*goNet.IPNet); ok && !ipnet.IP.IsLoopback() {
 			if ipnet.IP.To4() != nil {
 				fmt.Println(ipnet.IP.String())
-                return ipnet.IP.String()
+				return ipnet.IP.String()
 			}
 		}
 	}
-    return ""
+	return ""
 }
