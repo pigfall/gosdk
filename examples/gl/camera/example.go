@@ -59,6 +59,10 @@ func main() {
 
 	failOnError(gl.Init())
 
+	// setup viewport and clear color
+	gl.GLViewport(0, 0, 800, 600)
+	gl.GLClearColor(0.2, 0.3, 0.3, 1.0)
+
 	imgFile, err := os.Open("examples/gl/assets/anya.jpeg")
 	failOnError(err)
 	defer imgFile.Close()
@@ -71,42 +75,79 @@ func main() {
 	failOnError(err)
 	gl.GLUseProgram(shaderProgram)
 
-	positions := []float32{
-		-50, 50, 0.0, 0.0, 1.0,
-		-50, -50, 0.0, 0.0, 0.0,
-		50, -50, 0.0, 1.0, 0.0,
-		50, 50, 0.0, 1.0, 1.0,
-	}
+    // Cube vertices: position (x,y,z) + texcoord (u,v)
+    positions := []float32{
+        // Front face
+        -50, 50, 50, 0.0, 1.0,
+        -50, -50, 50, 0.0, 0.0,
+        50, -50, 50, 1.0, 0.0,
+        50, 50, 50, 1.0, 1.0,
+        // Back face
+        -50, 50, -50, 1.0, 1.0,
+        -50, -50, -50, 1.0, 0.0,
+        50, -50, -50, 0.0, 0.0,
+        50, 50, -50, 0.0, 1.0,
+    }
 
-	positionsBytes := make([]byte, len(positions)*4)
-	for i, v := range positions {
-		binary.LittleEndian.PutUint32(positionsBytes[i*4:(i+1)*4], math.Float32bits(v))
-	}
+    // Indices for the cube (12 triangles)
+    indices := []uint32{
+        // front
+        0, 1, 2, 0, 2, 3,
+        // right
+        3, 2, 6, 3, 6, 7,
+        // back
+        7, 6, 5, 7, 5, 4,
+        // left
+        4, 5, 1, 4, 1, 0,
+        // top
+        4, 0, 3, 4, 3, 7,
+        // bottom
+        1, 5, 6, 1, 6, 2,
+    }
 
-	vao, err := gl.GLGenVertexArray()
-	failOnError(err)
-	gl.GLBindVertexArray(vao)
+    // convert positions to bytes
+    positionsBytes := make([]byte, len(positions)*4)
+    for i, v := range positions {
+        binary.LittleEndian.PutUint32(positionsBytes[i*4:(i+1)*4], math.Float32bits(v))
+    }
 
-	vbo, err := gl.GLGenBuffer()
-	failOnError(err)
-	gl.GLBindBuffer(gl.GLBindBufferTarget_ArrayBuffer, vbo)
-	gl.GLBufferData(
-		gl.GLBindBufferTarget_ArrayBuffer,
-		len(positionsBytes),
-		positionsBytes,
-		gl.GLBufferDataUsage_StaticDraw,
-	)
-	gl.GLVertexAttribPointer(0, 3, gl.GLPrimitiveType_Float32, 5*4, 0)
-	gl.GLEnableVertexAttribArray(0)
-	// vertex attribute pointer.
-	gl.GLVertexAttribPointer(
-		1,
-		2,
-		gl.GLPrimitiveType_Float32,
-		5*4,
-		3*4,
-	)
-	gl.GLEnableVertexAttribArray(1)
+    // convert indices to bytes (uint32)
+    indicesBytes := make([]byte, len(indices)*4)
+    for i, v := range indices {
+        binary.LittleEndian.PutUint32(indicesBytes[i*4:(i+1)*4], v)
+    }
+
+    vao, err := gl.GLGenVertexArray()
+    failOnError(err)
+    gl.GLBindVertexArray(vao)
+
+    // vertex buffer
+    vbo, err := gl.GLGenBuffer()
+    failOnError(err)
+    gl.GLBindBuffer(gl.GLBindBufferTarget_ArrayBuffer, vbo)
+    gl.GLBufferData(
+        gl.GLBindBufferTarget_ArrayBuffer,
+        len(positionsBytes),
+        positionsBytes,
+        gl.GLBufferDataUsage_StaticDraw,
+    )
+    // position
+    gl.GLVertexAttribPointer(0, 3, gl.GLPrimitiveType_Float32, 5*4, 0)
+    gl.GLEnableVertexAttribArray(0)
+    // texcoord
+    gl.GLVertexAttribPointer(1, 2, gl.GLPrimitiveType_Float32, 5*4, 3*4)
+    gl.GLEnableVertexAttribArray(1)
+
+    // element/index buffer
+    ebo, err := gl.GLGenBuffer()
+    failOnError(err)
+    gl.GLBindBuffer(gl.GLBindBufferTarget_ElementArrayBuffer, ebo)
+    gl.GLBufferData(
+        gl.GLBindBufferTarget_ElementArrayBuffer,
+        len(indicesBytes),
+        indicesBytes,
+        gl.GLBufferDataUsage_StaticDraw,
+    )
 
 	texture, err := gl.GLGenTexture()
 	failOnError(err)
@@ -146,9 +187,12 @@ func main() {
 			2048,
 	)
 	mvp := pmath.Matrix4Mul(&projectionMatrix,&lookAtMatrix)
-	mvpUniformaLoc,err := gl.GLGetUniformLocation(shaderProgram,"u_mvp")
-	failOnError(err)
-	gl.GLUniformMatrix4fv(mvpUniformaLoc,&mvp)
+    mvpUniformaLoc,err := gl.GLGetUniformLocation(shaderProgram,"u_mvp")
+    failOnError(err)
+    gl.GLUniformMatrix4fv(mvpUniformaLoc,&mvp)
+
+    // Enable depth testing so the cube renders correctly in 3D
+    gl.GLEnable(gl.GLCapability_DEPTH_TEST)
 
 	running := true
 	var ev sdl3.Event
@@ -188,22 +232,26 @@ func main() {
 			}
 		}
 
-		if cameraPosChanged{
-			lookAt := pmath.Vector3Add(&cameraPos,&cameraFront)
-			lookAtMatrix = pmath.Matrix4LookAt(
-					cameraPos,
-					lookAt,
-					cameraUp,
-			)
+        if cameraPosChanged{
+            lookAt := pmath.Vector3Add(&cameraPos,&cameraFront)
+            lookAtMatrix = pmath.Matrix4LookAt(
+                    cameraPos,
+                    lookAt,
+                    cameraUp,
+            )
 
-			mvp := pmath.Matrix4Mul(&projectionMatrix,&lookAtMatrix)
-			mvpUniformaLoc,err := gl.GLGetUniformLocation(shaderProgram,"u_mvp")
-			failOnError(err)
-			gl.GLUniformMatrix4fv(mvpUniformaLoc,&mvp)
-		}
+            mvp := pmath.Matrix4Mul(&projectionMatrix,&lookAtMatrix)
+            mvpUniformaLoc,err := gl.GLGetUniformLocation(shaderProgram,"u_mvp")
+            failOnError(err)
+            gl.GLUniformMatrix4fv(mvpUniformaLoc,&mvp)
+        }
 
-		gl.GLClear(gl.GLClearMask_ColorBuffer)
-		gl.GLDrawArrays(gl.GLDrawArraysMode_Triangles_Fan, 0, 4)
+        // clear color and depth
+        gl.GLClear(gl.GLClearMask_ColorBuffer | gl.GLClearMask_DepthBuffer)
+
+        // draw elements from the EBO
+        // 36 indices for the cube
+        gl.GLDrawElements(gl.GLDrawArraysMode_Triangles, 36, 0)
 
 		failOnError(win.Swap())
 		cameraPosChanged = false
