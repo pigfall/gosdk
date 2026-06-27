@@ -12,6 +12,10 @@ type KeyboardEvent struct {
 	E *sdl.KeyboardEvent
 }
 
+type MouseMotionEvent struct {
+	E *sdl.MouseMotionEvent
+}
+
 func (e *Event) Type() EventType {
 	return EventType(e.E.Type)
 }
@@ -19,6 +23,12 @@ func (e *Event) Type() EventType {
 func (e *Event) KeyboardEvent() *KeyboardEvent {
 	return &KeyboardEvent{
 		E: e.E.KeyboardEvent(),
+	}
+}
+
+func (e *Event) MouseMotionEvent() *MouseMotionEvent {
+	return &MouseMotionEvent{
+		E: e.E.MouseMotionEvent(),
 	}
 }
 

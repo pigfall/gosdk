@@ -247,11 +247,34 @@ func main() {
 	var cameraUpdated = true
 	const walkSpeed = 10
 	const turnSpeed = 3.0 // degrees per key press
+	var mouseLastPosX float32
+	var mouseLastPosY float32
+	var firstMouseMotion = true
 	for running {
 		for sdl3.PollEvent(&ev) {
 			switch ev.Type() {
 			case sdl3.EventQuit:
 				running = false
+			case sdl3.EventMouseMotion:
+				mouseMotion := ev.MouseMotionEvent()
+				if firstMouseMotion {
+					mouseLastPosX = mouseMotion.E.X
+					mouseLastPosY = mouseMotion.E.Y
+					firstMouseMotion = false
+				}
+				offsetX := mouseMotion.E.X - mouseLastPosX
+				offsetY := mouseLastPosY - mouseMotion.E.Y
+				mouseLastPosX = mouseMotion.E.X
+				mouseLastPosY = mouseMotion.E.Y
+				cameraPitch += float64(offsetY * 0.1)
+				cameraYaw += float64(offsetX * 0.1)
+				if cameraPitch > 89 {
+					cameraPitch = 89
+				} else if cameraPitch < -89 {
+					cameraPitch = -89
+				}
+				updateCameraFront()
+				cameraUpdated = true
 			case sdl3.EventKeyDown:
 				keyEvent := ev.KeyboardEvent()
 				keyCode := keyEvent.KeyCode()
