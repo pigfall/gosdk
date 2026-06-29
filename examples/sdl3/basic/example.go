@@ -33,8 +33,6 @@ func main() {
 					running = false
 				}
 			case sdl3.EventMouseMotion:
-				mouseEv := ev.E.MouseMotionEvent()
-				mouseEv.
 			default:
 			}
 		}
