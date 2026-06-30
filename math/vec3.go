@@ -56,6 +56,14 @@ func Vector3Multiple(v *Vec3, scalar float32) Vec3 {
 	}
 }
 
+func Vector3MultipleX(v Vec3, scalar float32) *Vec3 {
+	return &Vec3{
+		X: v.X * scalar,
+		Y: v.Y * scalar,
+		Z: v.Z * scalar,
+	}
+}
+
 func Vector3Cross(a, b *Vec3) Vec3 {
 	return Vec3{
 		X: a.Y*b.Z - a.Z*b.Y,
