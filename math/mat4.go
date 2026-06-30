@@ -30,6 +30,17 @@ func Matrix4Translate(v Vec3) Matrix4 {
 	}
 }
 
+func Matrix4Scale(v Vec3) Matrix4 {
+	return Matrix4{
+		Values: []float32{
+			v.X, 0.0, 0.0, 0.0,
+			0.0, v.Y, 0.0, 0.0,
+			0.0, 0.0, v.Z, 0.0,
+			0.0, 0.0, 0.0, 1.0,
+		},
+	}
+}
+
 func Matrix4Perspective(fovRad, aspect, zNear, zFar float32) Matrix4 {
 	yScale := 1.0 / float32(math.Tan(float64(fovRad*0.5)))
 	xScale := yScale / aspect
