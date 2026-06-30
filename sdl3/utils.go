@@ -5,6 +5,10 @@ import (
 )
 
 type runOption struct {
+	initFunc func() // called after gl.Init()
+	onUpdate func() // called after polled event.
+	draw     func() // called after gl clear
+
 	windowTitle  string
 	windowWidth  int
 	windowHeight int
@@ -17,9 +21,6 @@ type runOption struct {
 type RunOption func(o *runOption)
 
 func Run(
-	init func(),
-	onUpdate func(),
-	draw func(),
 	options ...RunOption,
 ) {
 	unload, err := LoadEmbeddedSDL()
@@ -30,6 +31,9 @@ func Run(
 	defer Quit()
 
 	option := &runOption{
+		initFunc:     func() {},
+		onUpdate:     func() {},
+		draw:         func() {},
 		windowTitle:  "demo",
 		windowWidth:  600,
 		windowHeight: 600,
@@ -56,7 +60,8 @@ func Run(
 
 	failOnError(gl.Init())
 
-	init()
+	option.initFunc()
+
 	running := true
 	var ev Event
 	for running {
@@ -68,10 +73,10 @@ func Run(
 			}
 		}
 
-		onUpdate()
+		option.onUpdate()
 
 		gl.GLClear(gl.GLClearMask_ColorBuffer | gl.GLClearMask_DepthBuffer | gl.GLClearMask_StencilBuffer)
-		draw()
+		option.draw()
 		failOnError(window.Swap())
 	}
 }
@@ -91,5 +96,23 @@ func WithWindowWidth(width int) func(o *runOption) {
 func WithWindowHeight(height int) func(o *runOption) {
 	return func(o *runOption) {
 		o.windowHeight = height
+	}
+}
+
+func WithInitFunc(initF func()) func(o *runOption) {
+	return func(o *runOption) {
+		o.initFunc = initF
+	}
+}
+
+func WithOnUpdate(onUpdate func()) func(o *runOption) {
+	return func(o *runOption) {
+		o.onUpdate = onUpdate
+	}
+}
+
+func WithDraw(draw func()) func(o *runOption) {
+	return func(o *runOption) {
+		o.draw = draw
 	}
 }
