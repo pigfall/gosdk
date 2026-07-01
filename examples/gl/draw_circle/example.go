@@ -2,12 +2,12 @@ package main
 
 import (
 	"encoding/binary"
-	"math"
 	"runtime"
 
 	"github.com/pigfall/gosdk/bytes"
 	examplegl "github.com/pigfall/gosdk/examples/gl"
 	"github.com/pigfall/gosdk/gl"
+	"github.com/pigfall/gosdk/model"
 )
 
 func init() {
@@ -20,7 +20,6 @@ layout (location=0) in vec3 in_pos;
 void main(){
 	gl_Position = vec4(in_pos,1.0);
 }
-
 `
 
 const fragmentShaderSource = `#version 410 core
@@ -32,16 +31,10 @@ void main(){
 `
 
 func main() {
-	verticies := []float32{
-		0.0, 0.0, 0.0, //Center point.
-	}
-	segements := 100
-	for i := 0; i <= segements; i++ {
-		rad := 360.0 / float32(segements) * float32(i) * (math.Pi / 180)
-		x := math.Cos(float64(rad))
-		y := math.Sin(float64(rad))
-		verticies = append(verticies, float32(x), float32(y), 0.0)
-	}
+	circleBuilder := model.Circle2DBuilder{}
+
+	verticies := circleBuilder.Build()
+
 	verticesBytes := bytes.Float32SliceToBytes(verticies, binary.LittleEndian)
 
 	examplegl.Run(
