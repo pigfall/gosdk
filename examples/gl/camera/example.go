@@ -202,7 +202,7 @@ func main() {
 		rgbaImg.Pix,
 	)
 
-	cameraUp := pmath.Vec3{0, 1, 0}
+	worldUp := pmath.Vec3{0, 1, 0}
 	cameraFront := pmath.Vec3{0, 0, -1}
 	cameraPos := pmath.Vec3{0, 0, 600}
 	// yaw/pitch for camera rotation (degrees)
@@ -226,7 +226,7 @@ func main() {
 	lookAtMatrix := pmath.Matrix4LookAt(
 		cameraPos,
 		lookAt,
-		cameraUp,
+		worldUp,
 	)
 	projectionMatrix := pmath.Matrix4Perspective(
 		45*math.Pi/180,
@@ -285,12 +285,12 @@ func main() {
 					cameraPos = pmath.Vector3Add(&cameraPos, &v)
 					cameraUpdated = true
 				} else if keyCode == sdl3.K_a {
-					v := pmath.Vector3Cross(&cameraFront, &cameraUp).Normalized()
+					v := pmath.Vector3Cross(&cameraFront, &worldUp).Normalized()
 					v = pmath.Vector3Multiple(&v, walkSpeed)
 					cameraPos = pmath.Vector3Sub(&cameraPos, &v)
 					cameraUpdated = true
 				} else if keyCode == sdl3.K_d {
-					v := pmath.Vector3Cross(&cameraFront, &cameraUp).Normalized()
+					v := pmath.Vector3Cross(&cameraFront, &worldUp).Normalized()
 					v = pmath.Vector3Multiple(&v, walkSpeed)
 					cameraPos = pmath.Vector3Add(&cameraPos, &v)
 					cameraUpdated = true
@@ -331,7 +331,7 @@ func main() {
 			lookAtMatrix = pmath.Matrix4LookAt(
 				cameraPos,
 				lookAt,
-				cameraUp,
+				worldUp,
 			)
 
 			mvp := pmath.Matrix4Mul(&projectionMatrix, &lookAtMatrix)

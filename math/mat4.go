@@ -78,18 +78,18 @@ func Matrix4Ortho(left, right, bottom, top, zNear, zFar float32) Matrix4 {
 	}
 }
 
-func Matrix4LookAt(eyePos, at, up Vec3) Matrix4 {
+func Matrix4LookAt(eyePos, at, worldUp Vec3) Matrix4 {
 	front := Vector3Sub(&at, &eyePos).Normalized()
-	s := Vector3Cross(&front, &up).Normalized()
+	s := Vector3Cross(&front, &worldUp).Normalized()
 	//let u = s.cross(&f).normalized()?;
-	u := Vector3Cross(&s, &front).Normalized()
+	cameraUp := Vector3Cross(&s, &front).Normalized()
 	return Matrix4{
 		Values: []float32{
-			s.X, u.X, -front.X, 0.0,
-			s.Y, u.Y, -front.Y, 0.0,
-			s.Z, u.Z, -front.Z, 0.0,
+			s.X, cameraUp.X, -front.X, 0.0,
+			s.Y, cameraUp.Y, -front.Y, 0.0,
+			s.Z, cameraUp.Z, -front.Z, 0.0,
 			//-s.dot(&eye), -u.dot(&eye), f.dot(&eye), 1.0,
-			-Vector3Dot(&s, &eyePos), -Vector3Dot(&u, &eyePos), Vector3Dot(&front, &eyePos), 1.0,
+			-Vector3Dot(&s, &eyePos), -Vector3Dot(&cameraUp, &eyePos), Vector3Dot(&front, &eyePos), 1.0,
 		},
 	}
 }
