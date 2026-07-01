@@ -2,12 +2,13 @@ package sdl3
 
 import (
 	"github.com/pigfall/gosdk/gl"
+	"time"
 )
 
 type runOption struct {
-	initFunc func() // called after gl.Init()
-	onUpdate func() // called after polled event.
-	draw     func() // called after gl clear
+	initFunc func()           // called after gl.Init()
+	onUpdate func(dt float32) // called after polled event.
+	draw     func()           // called after gl clear
 
 	windowTitle  string
 	windowWidth  int
@@ -64,6 +65,7 @@ func Run(
 
 	running := true
 	var ev Event
+	prevTime := time.Now()
 	for running {
 		for PollEvent(&ev) {
 			switch ev.Type() {
@@ -73,7 +75,10 @@ func Run(
 			}
 		}
 
-		option.onUpdate()
+		now := time.Now()
+		dt := now.Sub(prevTime)
+		prevTime = now
+		option.onUpdate(float32(dt))
 
 		gl.GLClear(gl.GLClearMask_ColorBuffer | gl.GLClearMask_DepthBuffer | gl.GLClearMask_StencilBuffer)
 		option.draw()
