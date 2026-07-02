@@ -33,7 +33,7 @@ func Run(
 
 	option := &runOption{
 		initFunc:     func() {},
-		onUpdate:     func() {},
+		onUpdate:     func(dt float32) {},
 		draw:         func() {},
 		windowTitle:  "demo",
 		windowWidth:  600,
@@ -76,7 +76,7 @@ func Run(
 		}
 
 		now := time.Now()
-		dt := now.Sub(prevTime)
+		dt := now.Sub(prevTime).Seconds()
 		prevTime = now
 		option.onUpdate(float32(dt))
 
@@ -110,7 +110,7 @@ func WithInitFunc(initF func()) func(o *runOption) {
 	}
 }
 
-func WithOnUpdate(onUpdate func()) func(o *runOption) {
+func WithOnUpdate(onUpdate func(dt float32)) func(o *runOption) {
 	return func(o *runOption) {
 		o.onUpdate = onUpdate
 	}
