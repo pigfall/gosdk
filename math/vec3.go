@@ -18,7 +18,7 @@ func NewVec3(x, y, z float32) Vec3 {
 	}
 }
 
-func (v *Vec3) Len() float32 {
+func (v Vec3) Len() float32 {
 	return float32(stdmath.Sqrt(float64(v.X*v.X + v.Y*v.Y + v.Z*v.Z)))
 }
 
@@ -53,6 +53,14 @@ func Vector3Multiple(v *Vec3, scalar float32) Vec3 {
 		X: v.X * scalar,
 		Y: v.Y * scalar,
 		Z: v.Z * scalar,
+	}
+}
+
+func Vector3Divisor(v *Vec3, divisor float32) Vec3 {
+	return Vec3{
+		X: v.X / divisor,
+		Y: v.Y / divisor,
+		Z: v.Z / divisor,
 	}
 }
 
